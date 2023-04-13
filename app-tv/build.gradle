@@ -1,0 +1,49 @@
+apply from: "../commons-limited-device.gradle"
+apply from : '../dependencies.gradle'
+
+android {
+    defaultConfig {
+        applicationId "org.torproject.android.tv"
+        minSdkVersion 23 
+        targetSdkVersion 31
+    }
+
+    aaptOptions {
+        cruncherEnabled = false
+    }
+
+    flavorDimensions "teevee"
+
+    productFlavors {
+        teevee {
+            dimension "teevee"
+            minSdkVersion 23 
+            applicationId 'org.torproject.android.tv'
+            targetSdkVersion 29 
+            versionCode 10020000
+            versionName 'orbot-tv-1.0.0-BETA-2-tor-0.4.5.9'
+            archivesBaseName = "Orbot-TV-$versionName"
+        }
+    }
+
+}
+
+dependencies {
+    implementation(
+            project(':appcore'),
+            project(':intentintegrator'),
+            project(':orbotservice'),
+            libs.android_material,
+            libs.android_snowfall,
+            libs.androidx_constraint,
+            libs.androidx_coordinator,
+            libs.androidx_leanback_core,
+            libs.androidx_leanback_paging,
+            libs.androidx_leanback_preferences,
+            libs.androidx_leanback_tab,
+            libs.androidx_palette,
+            libs.androidx_recyclerview,
+            libs.apl_appintro
+    )
+    androidTestImplementation libs.fastlane_screengrab
+}

@@ -1,0 +1,82 @@
+apply from: "../commons-device.gradle"
+apply from : '../dependencies.gradle'
+
+/* gets the version name from the latest Git tag, stripping the leading v off */
+def getVersionName = { ->
+    def stdout = new ByteArrayOutputStream()
+    exec {
+        commandLine 'git', 'describe', '--tags', '--always'
+        standardOutput = stdout
+    }
+    return stdout.toString().trim()
+}
+
+android {
+    defaultConfig {
+        applicationId "org.torproject.android"
+        versionName getVersionName()
+        minSdkVersion 16
+        targetSdkVersion 31
+        multiDexEnabled true
+    }
+    compileOptions {
+        coreLibraryDesugaringEnabled true
+    }
+    lintOptions {
+        htmlReport true
+        xmlReport false
+        textReport false
+        lintConfig file("../lint.xml")
+        disable "InvalidPackage"
+    }
+    buildTypes {
+        release {
+            shrinkResources false
+            minifyEnabled false
+        }
+    }
+
+    flavorDimensions "free"
+
+    productFlavors {
+        fullperm {
+            dimension "free"
+
+            minSdkVersion 16
+            applicationId 'org.torproject.android'
+            targetSdkVersion 31
+            versionCode 1664300100
+
+            versionName getVersionName()
+            archivesBaseName = "Orbot-$versionName"
+        }
+    }
+
+    splits {
+        abi {
+            universalApk true
+        }
+    }
+
+    dependencies {
+        implementation(
+                project(':appcore'),
+                project(':intentintegrator'),
+                project(':orbotservice'),
+                libs.android_material,
+                libs.android_volley,
+                libs.androidx_localbroadcast,
+                libs.apl_appintro,
+                libs.bclogic_pulsator,
+           //     libs.ipt_proxy - using OrbotLib below
+        )
+        androidTestImplementation libs.fastlane_screengrab
+        coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:1.1.5'
+
+        //building from AAR built from https://github.com/guardianproject/tor-android/commit/95eca2a8c9eb44068f11332d7731580a13ef7b28
+        //    until a new full release is done
+       implementation files('../libs/tor-android-binary-release.aar')
+        implementation files('../libs/OrbotLib.aar')
+
+    }
+}

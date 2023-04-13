@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="org.torproject.android"
+    android:installLocation="internalOnly">
+
+    <!--
+        Some Chromebooks don't support touch. Although not essential,
+        it's a good idea to explicitly include this declaration.
+    -->
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="18" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+        </intent>
+    </queries>
+    
+    <application
+        android:name=".OrbotApp"
+        android:allowBackup="false"
+        android:allowClearUserData="true"
+        android:configChanges="locale|orientation|screenSize"
+        android:description="@string/app_description"
+        android:hardwareAccelerated="true"
+        android:largeHeap="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/DefaultTheme"
+        tools:replace="android:allowBackup">
+
+        <activity
+            android:name=".OrbotMainActivity"
+            android:excludeFromRecents="false"
+            android:launchMode="singleTop"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="bridge" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="org.torproject.android.REQUEST_V3_ONION_SERVICE"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".core.ui.SettingsPreferencesActivity"
+            android:theme="@style/Theme.AppCompat" />
+
+        <activity
+            android:name=".ui.AppManagerActivity"
+            android:label="@string/apps_mode"
+            android:theme="@style/Theme.AppCompat" />
+
+        <activity
+            android:name=".ui.v3onionservice.OnionServiceActivity"
+            android:label="@string/hidden_services"
+            android:theme="@style/DefaultTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".OrbotMainActivity" />
+        </activity>
+
+        <activity android:name=".ui.v3onionservice.clientauth.ClientAuthActivity"
+            android:label="@string/v3_client_auth_activity_title"
+            android:theme="@style/DefaultTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".OrbotMainActivity"/>
+        </activity>
+
+        <activity
+            android:name=".ui.onboarding.OnboardingActivity"
+            android:configChanges="orientation|screenSize|screenLayout" />
+
+        <activity
+            android:name=".ui.onboarding.BridgeWizardActivity"
+            android:configChanges="orientation|screenSize"
+            android:label="@string/bridges" />
+
+        <activity
+            android:label="@string/request_bridges"
+            android:name=".ui.onboarding.MoatActivity"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".ui.onboarding.CustomBridgesActivity"
+            android:label="@string/use_custom_bridges" />
+
+        <provider
+            android:name=".ui.v3onionservice.OnionServiceContentProvider"
+            android:authorities="org.torproject.android.ui.v3onionservice"
+            android:exported="false" />
+
+        <provider
+            android:authorities="org.torproject.android.ui.v3onionservice.clientauth"
+            android:name=".ui.v3onionservice.clientauth.ClientAuthContentProvider"
+            android:exported="false"/>
+
+        <receiver
+            android:name=".service.StartTorReceiver"
+            android:exported="true"
+            tools:ignore="ExportedReceiver">
+            <intent-filter>
+                <action android:name="org.torproject.android.intent.action.START" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".core.OnBootReceiver"
+            android:enabled="true"
+            android:exported="true"
+            android:directBootAware="true"
+            >
+
+            <intent-filter>
+                <action android:name="android.net.wifi.STATE_CHANGE" />
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+                <action android:name="android.intent.action.REBOOT" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name=".service.OrbotService"
+            android:enabled="true"
+            android:permission="android.permission.BIND_VPN_SERVICE"
+            android:foregroundServiceType="dataSync"
+            android:stopWithTask="false"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.net.VpnService" />
+            </intent-filter>
+        </service>
+
+    </application>
+
+</manifest>

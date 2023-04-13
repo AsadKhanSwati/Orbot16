@@ -1,0 +1,64 @@
+apply plugin: 'com.android.library'
+apply from: "../commons.gradle"
+apply from : '../dependencies.gradle'
+
+android {
+    ndkVersion '21.3.6528147'
+
+    /**
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['./src/main/libs']
+        }
+    }**/
+
+    defaultConfig {
+        minSdkVersion 16
+        targetSdkVersion 31
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError true
+        htmlReport true
+        xmlReport false
+        textReport false
+        lintConfig file("../lint.xml")
+        disable "InvalidPackage"
+    }
+
+    packagingOptions {
+        exclude 'META-INF/androidx.localbroadcastmanager_localbroadcastmanager.version'
+    }
+}
+
+dependencies {
+    api libs.guardian_jtorctl
+    implementation(
+            libs.android_shell,
+            libs.androidx_core,
+            libs.androidx_localbroadcast,
+   //         libs.ipt_proxy,
+            libs.guardian_jsocks,
+            libs.portmapper,
+      //      libs.tor_android,
+            libs.pcap_core,
+            libs.pcap_factory
+    )
+
+    //building from AAR built from https://github.com/guardianproject/tor-android/commit/95eca2a8c9eb44068f11332d7731580a13ef7b28
+    //    until a new full release is done
+    //implementation files('../libs/i.aar')
+    implementation files('../libs/tor-android-binary-release.aar')
+    implementation files('../libs/geoip.jar')
+    implementation files('../libs/OrbotLib.aar')
+
+}

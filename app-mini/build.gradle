@@ -1,0 +1,48 @@
+apply from: "../commons-device.gradle"
+apply from : '../dependencies.gradle'
+
+android {
+    defaultConfig {
+        applicationId "org.torproject.android.mini"
+        minSdkVersion 16
+        targetSdkVersion 31
+        multiDexEnabled true
+    }
+
+    flavorDimensions "freemini"
+
+    productFlavors {
+        mini {
+            dimension "freemini"
+            minSdkVersion 16
+            applicationId 'org.torproject.android.mini'
+            targetSdkVersion 28
+            versionCode 10020000
+            versionName 'mini-1.0.0-BETA-2-tor-0.4.5.7'
+            archivesBaseName = "Orbot-mini-$versionName"
+        }
+    }
+
+    packagingOptions {
+        exclude 'lib/x86/libgojni.so'
+        exclude 'lib/x86_64/libgojni.so'
+        exclude 'lib/arm64-v8a/libgojni.so'
+        exclude 'lib/armeabi-v7a/libgojni.so'
+        exclude 'lib/armeabi/libgojni.so'
+    }
+    dependencies {
+        implementation(
+                project(path: ':appcore'),
+                project(path: ':intentintegrator'),
+                project(':orbotservice'),
+                libs.android_material,
+                libs.androidx_constraint,
+                libs.androidx_coordinator,
+                libs.androidx_multidex,
+                libs.androidx_palette,
+                libs.androidx_recyclerview,
+                libs.apl_appintro
+        )
+        androidTestImplementation libs.fastlane_screengrab
+    }
+}
